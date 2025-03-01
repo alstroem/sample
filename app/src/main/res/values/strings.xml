@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Sample</string>
+    <string name="sensor_temperature_label">Temperature</string>
+    <string name="sensor_temperature_value" translatable="false">%sºC</string>
+    <string name="sensor_humidity_label">Humidity</string>
+    <string name="sensor_humidity_value" translatable="false">%d%%</string>
+    <string name="sensor_button_start_label">Start</string>
+    <string name="sensor_button_cancel_label">Cancel</string>
+    <string name="sensor_button_save_label">Save</string>
+    <string name="sensor_event_details_timestamp">Timestamp</string>
+</resources>
