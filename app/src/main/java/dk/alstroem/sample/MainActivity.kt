@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -24,27 +23,27 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import dagger.hilt.android.AndroidEntryPoint
+import dk.alstroem.core.designsystem.theme.SampleTheme
 import dk.alstroem.feature.weather.measurement.EventDetailsScreen
 import dk.alstroem.feature.weather.measurement.EventDetailsViewModel
 import dk.alstroem.feature.weather.measurement.EventsScreen
 import dk.alstroem.feature.weather.measurement.EventsViewModel
-import dk.alstroem.sample.navigation.Events
-import dk.alstroem.sample.navigation.Sensor
+import dk.alstroem.feature.weather.navigation.EventDetails
+import dk.alstroem.feature.weather.navigation.EventOverview
+import dk.alstroem.feature.weather.navigation.Events
+import dk.alstroem.feature.weather.navigation.Sensor
 import dk.alstroem.sample.navigation.topLeverRoutes
 import dk.alstroem.feature.weather.overview.OverviewViewModel
 import dk.alstroem.feature.weather.overview.OverviewScreen
-import dk.alstroem.sample.navigation.EventDetails
-import dk.alstroem.sample.navigation.EventOverview
+import org.koin.androidx.compose.koinViewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            dk.alstroem.core.designsystem.theme.SampleTheme {
+            SampleTheme {
                 val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -101,7 +100,7 @@ fun SampleNavHost(
         startDestination = Sensor
     ) {
         composable<Sensor> {
-            val viewModel = hiltViewModel<OverviewViewModel>()
+            val viewModel: OverviewViewModel = koinViewModel()
             OverviewScreen(
                 uiState = viewModel.uiState,
                 onClick = { event -> viewModel.onClickEvent(event) }
@@ -109,7 +108,7 @@ fun SampleNavHost(
         }
         navigation<EventOverview>(startDestination = Events) {
             composable<Events> {
-                val viewModel = hiltViewModel<EventsViewModel>()
+                val viewModel: EventsViewModel = koinViewModel()
                 EventsScreen(
                     uiState = viewModel.uiSate,
                     openEventDetails = { timestamp ->
@@ -120,7 +119,7 @@ fun SampleNavHost(
                 )
             }
             composable<EventDetails> {
-                val viewModel = hiltViewModel<EventDetailsViewModel>()
+                val viewModel: EventDetailsViewModel = koinViewModel()
                 EventDetailsScreen(uiState = viewModel.uiState)
             }
         }

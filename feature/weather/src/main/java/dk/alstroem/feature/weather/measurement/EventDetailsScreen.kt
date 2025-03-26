@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dk.alstroem.feature.weather.R
 import dk.alstroem.feature.weather.measurement.model.EventDetailsUiState
-import dk.alstroem.sample.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

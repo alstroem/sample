@@ -7,16 +7,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dk.alstroem.domain.environment.usecase.GetSensorEventUseCase
+import dk.alstroem.domain.weather.usecase.GetWeatherSensorEventUseCase
 import dk.alstroem.feature.weather.measurement.model.EventDetailsUiState
-import dk.alstroem.sample.navigation.EventDetails
+import dk.alstroem.feature.weather.navigation.EventDetails
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EventDetailsViewModel @Inject constructor(
-    private val getSensorEvent: GetSensorEventUseCase,
+class EventDetailsViewModel(
+    private val getSensorEvent: GetWeatherSensorEventUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

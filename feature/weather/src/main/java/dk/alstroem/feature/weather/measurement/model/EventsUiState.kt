@@ -1,7 +1,7 @@
 package dk.alstroem.feature.weather.measurement.model
 
-import dk.alstroem.domain.environment.model.SensorEvent
+import dk.alstroem.domain.weather.model.WeatherSensorEvent
 
 data class EventsUiState(
-    val events: List<SensorEvent> = emptyList()
+    val events: List<WeatherSensorEvent> = emptyList()
 )

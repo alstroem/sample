@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -45,11 +44,6 @@ android {
 
 dependencies {
     implementation(project(":feature:weather"))
-
-    implementation(project(":domain:environment"))
-
-    implementation(project(":data:environmemt"))
-
     implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)
@@ -67,9 +61,8 @@ dependencies {
 
     implementation(libs.coroutines.android)
 
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)

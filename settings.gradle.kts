@@ -23,7 +23,7 @@ rootProject.name = "Sample"
 
 include(":app")
 include(":feature:weather")
-include(":domain:environment")
-include(":data:environmemt")
+include(":domain:weather")
+include(":data:weather")
 include(":core:designsystem")
 include(":core:sensor")

@@ -5,21 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.alstroem.core.sensor.WeatherSensor
-import dk.alstroem.domain.environment.model.SensorEvent
-import dk.alstroem.domain.environment.usecase.InsertSensorEventUseCase
+import dk.alstroem.domain.weather.model.WeatherSensorEvent
+import dk.alstroem.domain.weather.usecase.SetWeatherSensorEventUseCase
 import dk.alstroem.feature.weather.overview.model.SensorScreenEvent
 import dk.alstroem.feature.weather.overview.model.SensorUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class OverviewViewModel @Inject constructor(
+class OverviewViewModel(
     private val weatherSensor: WeatherSensor,
-    private val insertSensorEvent: InsertSensorEventUseCase
+    private val insertSensorEvent: SetWeatherSensorEventUseCase
 ) : ViewModel() {
 
     private var temperatureJob: Job? = null
@@ -64,7 +61,7 @@ class OverviewViewModel @Inject constructor(
     private fun saveSensorData() {
         viewModelScope.launch {
             with(uiState) {
-                val event = SensorEvent(
+                val event = WeatherSensorEvent(
                     timestamp = System.currentTimeMillis(),
                     temperature = temperature,
                     humidity = humidity

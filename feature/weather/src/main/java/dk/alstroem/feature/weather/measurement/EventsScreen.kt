@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dk.alstroem.core.designsystem.theme.SampleTheme
 import dk.alstroem.feature.weather.measurement.model.EventsUiState
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,7 +62,7 @@ fun EventItem(
 @Preview
 @Composable
 private fun OverviewScreenPreview() {
-    dk.alstroem.core.designsystem.theme.SampleTheme {
+    SampleTheme {
         EventsScreen(
             uiState = EventsUiState(),
             openEventDetails = {}
