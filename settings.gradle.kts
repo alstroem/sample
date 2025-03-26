@@ -20,6 +20,10 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Sample"
+
 include(":app")
+include(":feature:weather")
 include(":domain:environment")
 include(":data:environmemt")
+include(":core:designsystem")
+include(":core:sensor")

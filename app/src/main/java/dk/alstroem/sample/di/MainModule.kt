@@ -11,7 +11,7 @@ import dk.alstroem.data.environmemt.EnvironmentRepositoryImpl
 import dk.alstroem.data.environmemt.local.EnvironmentDao
 import dk.alstroem.data.environmemt.local.EnvironmentDatabase
 import dk.alstroem.domain.environment.EnvironmentRepository
-import dk.alstroem.sample.EnvironmentSensor
+import dk.alstroem.core.sensor.EnvironmentSensor
 import javax.inject.Singleton
 
 @Module
@@ -21,8 +21,8 @@ class MainModule {
     @Provides
     fun provideEnvironmentSensor(
         @ApplicationContext appContext: Context
-    ): EnvironmentSensor{
-        return EnvironmentSensor(appContext)
+    ): dk.alstroem.core.sensor.EnvironmentSensor {
+        return dk.alstroem.core.sensor.EnvironmentSensor(appContext)
     }
 
     @Provides

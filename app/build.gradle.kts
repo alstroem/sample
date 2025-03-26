@@ -44,8 +44,13 @@ android {
 }
 
 dependencies {
+    implementation(project(":feature:weather"))
+
     implementation(project(":domain:environment"))
+
     implementation(project(":data:environmemt"))
+
+    implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

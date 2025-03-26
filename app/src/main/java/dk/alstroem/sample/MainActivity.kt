@@ -25,18 +25,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dk.alstroem.sample.feature.eventdetails.EventDetailsScreen
-import dk.alstroem.sample.feature.eventdetails.EventDetailsViewModel
+import dk.alstroem.feature.weather.measurement.EventDetailsScreen
+import dk.alstroem.feature.weather.measurement.EventDetailsViewModel
+import dk.alstroem.feature.weather.measurement.EventsScreen
+import dk.alstroem.feature.weather.measurement.EventsViewModel
 import dk.alstroem.sample.navigation.Events
 import dk.alstroem.sample.navigation.Sensor
 import dk.alstroem.sample.navigation.topLeverRoutes
-import dk.alstroem.sample.feature.events.EventsScreen
-import dk.alstroem.sample.feature.events.EventsViewModel
-import dk.alstroem.sample.feature.sensor.SensorScreen
-import dk.alstroem.sample.feature.sensor.SensorViewModel
+import dk.alstroem.feature.weather.overview.OverviewViewModel
+import dk.alstroem.feature.weather.overview.OverviewScreen
 import dk.alstroem.sample.navigation.EventDetails
 import dk.alstroem.sample.navigation.EventOverview
-import dk.alstroem.sample.ui.theme.SampleTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -45,7 +44,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SampleTheme {
+            dk.alstroem.core.designsystem.theme.SampleTheme {
                 val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -102,8 +101,8 @@ fun SampleNavHost(
         startDestination = Sensor
     ) {
         composable<Sensor> {
-            val viewModel = hiltViewModel<SensorViewModel>()
-            SensorScreen(
+            val viewModel = hiltViewModel<OverviewViewModel>()
+            OverviewScreen(
                 uiState = viewModel.uiState,
                 onClick = { event -> viewModel.onClickEvent(event) }
             )
