@@ -8,4 +8,6 @@
     <string name="sensor_button_cancel_label">Cancel</string>
     <string name="sensor_button_save_label">Save</string>
     <string name="sensor_event_details_timestamp">Timestamp</string>
+    <string name="sensor_events_empty_label">You do not have any recorded weather sensor events</string>
+    <string name="sensor_not_available_label" translatable="false">The sensor is not available</string>
 </resources>

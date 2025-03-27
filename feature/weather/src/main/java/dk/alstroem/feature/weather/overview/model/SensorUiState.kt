@@ -1,7 +1,9 @@
 package dk.alstroem.feature.weather.overview.model
 
-data class SensorUiState(
-    val collectSensorData: Boolean = false,
-    val temperature: Float = 0.0f,
-    val humidity: Int = 0
-)
+sealed class SensorUiState<out T> {
+    data object NotAvailable : SensorUiState<Nothing>()
+    data object Idle : SensorUiState<Nothing>()
+    data class Collecting<T>(val value: T) : SensorUiState<T>()
+
+    fun getOrNull(): T? = if (this is Collecting) value else null
+}

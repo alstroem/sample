@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class WeatherSensorEventEntity(
     @PrimaryKey val timestamp: Long,
-    val temperature: Float,
-    val humidity: Int
+    val temperature: Float?,
+    val humidity: Int?
 )

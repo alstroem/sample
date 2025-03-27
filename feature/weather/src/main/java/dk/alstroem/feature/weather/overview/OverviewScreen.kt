@@ -11,23 +11,44 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.alstroem.core.designsystem.theme.SampleTheme
 import dk.alstroem.feature.weather.R
 import dk.alstroem.feature.weather.overview.model.SensorScreenEvent
 import dk.alstroem.feature.weather.overview.model.SensorUiState
+import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
 @Composable
 fun OverviewScreen(
-    uiState: SensorUiState,
+    modifier: Modifier = Modifier,
+    viewModel: OverviewViewModel = koinViewModel()
+) {
+    val temperatureUiState by viewModel.temperatureUiState.collectAsStateWithLifecycle()
+    val humidityUiState by viewModel.humidityUiState.collectAsStateWithLifecycle()
+
+    OverviewContent(
+        temperatureUiState = temperatureUiState,
+        humidityUiState = humidityUiState,
+        onClick = viewModel::onClickEvent,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun OverviewContent(
+    temperatureUiState: SensorUiState<Float>,
+    humidityUiState: SensorUiState<Int>,
     onClick: (SensorScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,9 +62,8 @@ fun OverviewScreen(
         val (values, buttons) = createRefs()
 
         SensorValues(
-            collectSensorData = uiState.collectSensorData,
-            temperature = uiState.temperature,
-            humidity = uiState.humidity,
+            temperatureUiState = temperatureUiState,
+            humidityUiState = humidityUiState,
             modifier = Modifier.constrainAs(values) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
@@ -53,7 +73,8 @@ fun OverviewScreen(
         )
 
         ButtonRow(
-            collectSensorData = uiState.collectSensorData,
+            temperatureUiState = temperatureUiState,
+            humidityUiState = humidityUiState,
             onClick = onClick,
             modifier = Modifier.constrainAs(buttons) {
                 start.linkTo(parent.start)
@@ -66,37 +87,48 @@ fun OverviewScreen(
 
 @Composable
 fun SensorValues(
-    collectSensorData: Boolean,
-    temperature: Float,
-    humidity: Int,
+    temperatureUiState: SensorUiState<Float>,
+    humidityUiState: SensorUiState<Int>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = stringResource(R.string.sensor_temperature_label),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Text(
-            text = if (collectSensorData) {
-                val value = String.format(Locale.getDefault(), "%.1f", temperature)
-                stringResource(R.string.sensor_temperature_value, value)
-            } else "-",
+            text = when (temperatureUiState) {
+                SensorUiState.Idle -> "-"
+                SensorUiState.NotAvailable -> stringResource(R.string.sensor_not_available_label)
+                is SensorUiState.Collecting -> {
+                    val value = String.format(Locale.getDefault(), "%.1f", temperatureUiState.value)
+                    stringResource(R.string.sensor_temperature_value, value)
+                }
+            },
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
         Text(
             text = stringResource(R.string.sensor_humidity_label),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Text(
-            text = if (collectSensorData) {
-                stringResource(R.string.sensor_humidity_value, humidity)
-            } else "-",
+            text = when (humidityUiState) {
+                SensorUiState.Idle -> "-"
+                SensorUiState.NotAvailable -> stringResource(R.string.sensor_not_available_label)
+                is SensorUiState.Collecting -> {
+                    stringResource(R.string.sensor_humidity_value, humidityUiState.value)
+                }
+            },
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
@@ -105,19 +137,21 @@ fun SensorValues(
 
 @Composable
 fun ButtonRow(
-    collectSensorData: Boolean,
+    temperatureUiState: SensorUiState<Float>,
+    humidityUiState: SensorUiState<Int>,
     onClick: (SensorScreenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
+        val isCollectingData = temperatureUiState is SensorUiState.Collecting || humidityUiState is SensorUiState.Collecting
         Button(
             modifier = Modifier.weight(1f),
             onClick = {
-                val event = if (collectSensorData) SensorScreenEvent.StopSensor else SensorScreenEvent.StartSensor
+                val event = if (isCollectingData) SensorScreenEvent.StopSensor else SensorScreenEvent.StartSensor
                 onClick(event)
             }
         ) {
-            val labelRes = if (collectSensorData) R.string.sensor_button_cancel_label else R.string.sensor_button_start_label
+            val labelRes = if (isCollectingData) R.string.sensor_button_cancel_label else R.string.sensor_button_start_label
             Text(text = stringResource(labelRes))
         }
 
@@ -125,8 +159,11 @@ fun ButtonRow(
 
         FilledTonalButton(
             modifier = Modifier.weight(1f),
-            enabled = collectSensorData,
-            onClick = { onClick(SensorScreenEvent.SaveSensorData) }
+            enabled = isCollectingData,
+            onClick = { onClick(SensorScreenEvent.SaveSensorData(
+                temperature = temperatureUiState.getOrNull(),
+                humidity = humidityUiState.getOrNull()
+            )) }
         ) {
             Text(text = stringResource(R.string.sensor_button_save_label))
         }
@@ -137,11 +174,9 @@ fun ButtonRow(
 @Composable
 private fun SensorScreenPreview() {
     SampleTheme {
-        OverviewScreen(
-            uiState = SensorUiState(
-                temperature = 21.2f,
-                humidity = 46
-            ),
+        OverviewContent(
+            temperatureUiState = SensorUiState.Collecting(21.2f),
+            humidityUiState = SensorUiState.Collecting(46),
             onClick = { }
         )
     }

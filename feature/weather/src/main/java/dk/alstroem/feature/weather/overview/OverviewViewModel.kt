@@ -1,8 +1,5 @@
 package dk.alstroem.feature.weather.overview
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dk.alstroem.core.sensor.WeatherSensor
@@ -11,7 +8,11 @@ import dk.alstroem.domain.weather.usecase.SetWeatherSensorEventUseCase
 import dk.alstroem.feature.weather.overview.model.SensorScreenEvent
 import dk.alstroem.feature.weather.overview.model.SensorUiState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OverviewViewModel(
@@ -22,28 +23,40 @@ class OverviewViewModel(
     private var temperatureJob: Job? = null
     private var humidityJob: Job? = null
 
-    var uiState by mutableStateOf(SensorUiState())
-        private set
+    private val _temperatureUiState = MutableStateFlow<SensorUiState<Float>>(SensorUiState.Idle)
+    val temperatureUiState: StateFlow<SensorUiState<Float>> = _temperatureUiState.asStateFlow()
+
+    private val _humidityUiState = MutableStateFlow<SensorUiState<Int>>(SensorUiState.Idle)
+    val humidityUiState: StateFlow<SensorUiState<Int>> = _humidityUiState.asStateFlow()
 
     fun onClickEvent(event: SensorScreenEvent) {
         when (event) {
             SensorScreenEvent.StartSensor -> registerSensors()
             SensorScreenEvent.StopSensor -> unregisterSensors()
-            SensorScreenEvent.SaveSensorData -> saveSensorData()
+            is SensorScreenEvent.SaveSensorData -> saveSensorData(event)
         }
     }
 
     private fun registerSensors() {
-        uiState = uiState.copy(collectSensorData = true)
         temperatureJob = viewModelScope.launch {
             weatherSensor.temperatureFlow().collectLatest { temperature ->
-                uiState = uiState.copy(temperature = temperature)
+                val state = temperature.fold(
+                    onSuccess = { SensorUiState.Collecting(it) },
+                    onFailure = { SensorUiState.NotAvailable }
+                )
+                temperature.isFailure
+                _temperatureUiState.update { state }
             }
         }
 
         humidityJob = viewModelScope.launch {
             weatherSensor.humidityFlow().collectLatest { humidity ->
-                uiState = uiState.copy(humidity = humidity)
+                val state = humidity.fold(
+                    onSuccess = { SensorUiState.Collecting(it) },
+                    onFailure = { SensorUiState.NotAvailable }
+                )
+
+                _humidityUiState.update { state }
             }
         }
     }
@@ -51,25 +64,20 @@ class OverviewViewModel(
     private fun unregisterSensors() {
         temperatureJob?.cancel()
         humidityJob?.cancel()
-        uiState = uiState.copy(
-            collectSensorData = false,
-            temperature = 0.0f,
-            humidity = 0
-        )
+        _temperatureUiState.update { SensorUiState.Idle }
+        _humidityUiState.update { SensorUiState.Idle }
     }
 
-    private fun saveSensorData() {
+    private fun saveSensorData(event: SensorScreenEvent.SaveSensorData) {
         viewModelScope.launch {
-            with(uiState) {
-                val event = WeatherSensorEvent(
-                    timestamp = System.currentTimeMillis(),
-                    temperature = temperature,
-                    humidity = humidity
-                )
+            val sensorEvent = WeatherSensorEvent(
+                timestamp = System.currentTimeMillis(),
+                temperature = event.temperature,
+                humidity = event.humidity
+            )
 
-                insertSensorEvent(event)
-                unregisterSensors()
-            }
+            insertSensorEvent(sensorEvent)
+            unregisterSensors()
         }
     }
 }

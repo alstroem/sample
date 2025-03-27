@@ -18,8 +18,8 @@ class WeatherRepositoryImpl(
         weatherSensorDao.insertSensorEvent(event.mapToEntity())
     }
 
-    override suspend fun getWeatherSensorEvent(timestamp: Long): WeatherSensorEvent? {
-        return weatherSensorDao.getSensorEvent(timestamp)?.mapToDomain()
+    override fun getWeatherSensorEvent(timestamp: Long): Flow<WeatherSensorEvent?> {
+        return weatherSensorDao.getSensorEvent(timestamp).map { it?.mapToDomain() }
     }
 
     override suspend fun clearWeatherSensorEvents() {

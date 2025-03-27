@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.kotlin.serialization.json)
 
     implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
     implementation(libs.timber)
 

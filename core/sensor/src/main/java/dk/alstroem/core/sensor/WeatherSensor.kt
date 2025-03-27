@@ -6,8 +6,10 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
+import java.util.Timer
 
 class WeatherSensor(context: Context) {
 
@@ -18,11 +20,11 @@ class WeatherSensor(context: Context) {
     private val humiditySensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY)
 
-    fun temperatureFlow() = callbackFlow {
+    fun temperatureFlow(): Flow<Result<Float>> = callbackFlow {
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event == null) return
-                trySend(event.values[0])
+                trySend(Result.success(event.values[0]))
             }
 
             override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -38,18 +40,25 @@ class WeatherSensor(context: Context) {
 
         Timber.d("Temperature sensor registered: $temperatureSensorRegistered")
 
-        awaitClose { sensorManager.unregisterListener(listener) }
+        if (!temperatureSensorRegistered) {
+            trySend(Result.failure(IllegalStateException("Temperature sensor not registered")))
+        }
+
+        awaitClose {
+            Timber.d("Unregister temperature listener")
+            sensorManager.unregisterListener(listener)
+        }
     }
 
-    fun humidityFlow() = callbackFlow {
+    fun humidityFlow(): Flow<Result<Int>> = callbackFlow {
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event == null) return
-                trySend(event.values[0].toInt())
+                trySend(Result.success(event.values[0].toInt()))
             }
 
             override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-                Timber.d("Temperature accuracy changed: $p1")
+                Timber.d("Humidity accuracy changed: $p1")
             }
         }
 
@@ -59,8 +68,15 @@ class WeatherSensor(context: Context) {
             SensorManager.SENSOR_DELAY_NORMAL
         )
 
-        Timber.d("Temperature sensor registered: $humiditySensorRegistered")
+        Timber.d("Humidity sensor registered: $humiditySensorRegistered")
 
-        awaitClose { sensorManager.unregisterListener(listener) }
+        if (!humiditySensorRegistered) {
+            trySend(Result.failure(IllegalStateException("Humidity sensor not registered")))
+        }
+
+        awaitClose {
+            Timber.d("Unregister humidity listener")
+            sensorManager.unregisterListener(listener)
+        }
     }
 }

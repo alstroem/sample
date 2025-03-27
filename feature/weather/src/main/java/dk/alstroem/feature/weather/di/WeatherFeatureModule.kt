@@ -3,8 +3,8 @@ package dk.alstroem.feature.weather.di
 import dk.alstroem.core.sensor.WeatherSensor
 import dk.alstroem.data.weather.di.weatherDataModule
 import dk.alstroem.domain.weather.di.weatherDomainModule
-import dk.alstroem.feature.weather.measurement.EventDetailsViewModel
-import dk.alstroem.feature.weather.measurement.EventsViewModel
+import dk.alstroem.feature.weather.events.EventDetailsViewModel
+import dk.alstroem.feature.weather.events.EventsViewModel
 import dk.alstroem.feature.weather.overview.OverviewViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf

@@ -24,18 +24,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import dk.alstroem.core.designsystem.theme.SampleTheme
-import dk.alstroem.feature.weather.measurement.EventDetailsScreen
-import dk.alstroem.feature.weather.measurement.EventDetailsViewModel
-import dk.alstroem.feature.weather.measurement.EventsScreen
-import dk.alstroem.feature.weather.measurement.EventsViewModel
+import dk.alstroem.feature.weather.events.EventDetailsScreen
+import dk.alstroem.feature.weather.events.EventsScreen
 import dk.alstroem.feature.weather.navigation.EventDetails
 import dk.alstroem.feature.weather.navigation.EventOverview
 import dk.alstroem.feature.weather.navigation.Events
 import dk.alstroem.feature.weather.navigation.Sensor
 import dk.alstroem.sample.navigation.topLeverRoutes
-import dk.alstroem.feature.weather.overview.OverviewViewModel
 import dk.alstroem.feature.weather.overview.OverviewScreen
-import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -100,17 +96,11 @@ fun SampleNavHost(
         startDestination = Sensor
     ) {
         composable<Sensor> {
-            val viewModel: OverviewViewModel = koinViewModel()
-            OverviewScreen(
-                uiState = viewModel.uiState,
-                onClick = { event -> viewModel.onClickEvent(event) }
-            )
+            OverviewScreen()
         }
         navigation<EventOverview>(startDestination = Events) {
             composable<Events> {
-                val viewModel: EventsViewModel = koinViewModel()
                 EventsScreen(
-                    uiState = viewModel.uiSate,
                     openEventDetails = { timestamp ->
                         navController.navigate(
                             route = EventDetails(timestamp = timestamp)
@@ -119,8 +109,7 @@ fun SampleNavHost(
                 )
             }
             composable<EventDetails> {
-                val viewModel: EventDetailsViewModel = koinViewModel()
-                EventDetailsScreen(uiState = viewModel.uiState)
+                EventDetailsScreen()
             }
         }
     }

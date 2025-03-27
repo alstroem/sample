@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface WeatherRepository {
     val weatherSensorEvents: Flow<List<WeatherSensorEvent>>
     suspend fun setWeatherSensorEvent(event: WeatherSensorEvent)
-    suspend fun getWeatherSensorEvent(timestamp: Long): WeatherSensorEvent?
+    fun getWeatherSensorEvent(timestamp: Long): Flow<WeatherSensorEvent?>
     suspend fun clearWeatherSensorEvents()
 }

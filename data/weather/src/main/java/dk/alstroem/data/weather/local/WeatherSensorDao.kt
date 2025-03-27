@@ -13,7 +13,7 @@ interface WeatherSensorDao {
     fun getSensorEvents(): Flow<List<WeatherSensorEventEntity>>
 
     @Query("SELECT * FROM WeatherSensorEventEntity WHERE timestamp = :timestamp")
-    suspend fun getSensorEvent(timestamp: Long): WeatherSensorEventEntity?
+    fun getSensorEvent(timestamp: Long): Flow<WeatherSensorEventEntity?>
 
     @Insert
     suspend fun insertSensorEvent(event: WeatherSensorEventEntity)
