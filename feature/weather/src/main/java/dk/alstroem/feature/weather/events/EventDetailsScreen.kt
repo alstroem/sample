@@ -13,8 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.alstroem.core.designsystem.theme.SampleTheme
+import dk.alstroem.domain.weather.model.WeatherSensorEvent
 import dk.alstroem.feature.weather.R
 import dk.alstroem.feature.weather.events.model.EventDetailsUiState
 import org.koin.androidx.compose.koinViewModel
@@ -45,7 +48,9 @@ fun EventDetailsContent(
         is EventDetailsUiState.Success -> {
             with(uiState.data) {
                 Column(
-                    modifier = modifier.fillMaxSize().padding(16.dp),
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -94,5 +99,21 @@ fun EventDetailsContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun EventDetailsContentPreview() {
+    SampleTheme {
+        EventDetailsContent(
+            uiState = EventDetailsUiState.Success(
+                data = WeatherSensorEvent(
+                    timestamp = System.currentTimeMillis(),
+                    temperature = 22.3f,
+                    humidity = 75,
+                )
+            )
+        )
     }
 }

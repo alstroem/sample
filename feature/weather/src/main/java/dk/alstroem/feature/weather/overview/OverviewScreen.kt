@@ -172,11 +172,35 @@ fun ButtonRow(
 
 @Preview
 @Composable
-private fun SensorScreenPreview() {
+private fun OverviewContentIdlePreview() {
+    SampleTheme {
+        OverviewContent(
+            temperatureUiState = SensorUiState.Idle,
+            humidityUiState = SensorUiState.Idle,
+            onClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OverviewContentCollectingPreview() {
     SampleTheme {
         OverviewContent(
             temperatureUiState = SensorUiState.Collecting(21.2f),
             humidityUiState = SensorUiState.Collecting(46),
+            onClick = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OverviewContentSensorsNotAvailablePreview() {
+    SampleTheme {
+        OverviewContent(
+            temperatureUiState = SensorUiState.NotAvailable,
+            humidityUiState = SensorUiState.NotAvailable,
             onClick = { }
         )
     }
