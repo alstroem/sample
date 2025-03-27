@@ -34,7 +34,6 @@ dependencies {
 
     implementation(project(":domain:weather"))
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
 
     implementation(libs.koin.android)
 
@@ -43,6 +42,4 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
