@@ -44,7 +44,7 @@ class OverviewViewModel(
                     onSuccess = { SensorUiState.Collecting(it) },
                     onFailure = { SensorUiState.NotAvailable }
                 )
-                temperature.isFailure
+
                 _temperatureUiState.update { state }
             }
         }
